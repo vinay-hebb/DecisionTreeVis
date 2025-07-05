@@ -1,52 +1,13 @@
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
-from typing import Tuple
-
-np.random.seed(42)
-base = 0.4  # Decay factor - each cluster has 70% of the previous cluster's size
-n_clusters = 3  # Default number of clusters
-proportions = [base**i for i in range(n_clusters)]
-proportions = np.array(proportions) / np.sum(proportions)
-print(proportions)
+from data_generator import generate_data
 
 app = dash.Dash(__name__)
-
-def generate_blobs_data(centers: np.ndarray = None, sample_sizes: list[int] = None) -> Tuple[np.ndarray, np.ndarray]:
-    n_clusters = len(centers)
-    if sample_sizes is None:
-        sample_sizes = [100] * n_clusters
-    
-    X_list = []
-    y_list = []
-    for i in range(n_clusters):
-        if centers is not None:
-            center = centers[i].reshape(1, -1)
-            cluster_X, cluster_y = make_blobs(
-                n_samples=sample_sizes[i], 
-                centers=center, 
-                cluster_std=1.0,
-            )
-        else:
-            cluster_X, cluster_y = make_blobs(
-                n_samples=sample_sizes[i], 
-                centers=1, 
-                cluster_std=1.0,
-                center_box=(-10.0, 10.0), 
-            )
-        X_list.append(cluster_X)
-        y_list.append(np.full(sample_sizes[i], i))  # Assign cluster labels
-    
-    # Combine all clusters
-    X = np.vstack(X_list)
-    y = np.concatenate(y_list)
-    
-    return X, y
 
 app.layout = html.Div([
     html.H1("Blob Configuration Visualizer", style={'textAlign': 'center'}),
@@ -69,15 +30,6 @@ app.layout = html.Div([
     ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center'})
 ])
 
-def generate_data(n_clusters):
-    total_samples = 20
-    sample_sizes = [int(prop * total_samples) for prop in proportions]
-    sample_sizes[0] += total_samples - sum(sample_sizes)
-    print(sample_sizes)
-    
-    centers = np.random.uniform(-5, 5, size=(n_clusters, 2))
-    X, y = generate_blobs_data(centers, sample_sizes)
-    return X, y, centers
 
 @app.callback(
     Output('blob-plot', 'figure'),
