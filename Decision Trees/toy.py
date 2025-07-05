@@ -9,25 +9,38 @@ from dash.dependencies import Input, Output
 from typing import Tuple
 
 np.random.seed(42)
+base = 0.2  # Decay factor - each cluster has 70% of the previous cluster's size
+n_clusters = 3  # Default number of clusters
+proportions = [base**i for i in range(n_clusters)]
+proportions = np.array(proportions) / np.sum(proportions)
+print(proportions)
 
 app = dash.Dash(__name__)
 
-def generate_blobs_data(n_clusters: int = 3, sample_sizes: list[int] = None) -> Tuple[np.ndarray, np.ndarray]:
+def generate_blobs_data(centers: np.ndarray = None, sample_sizes: list[int] = None) -> Tuple[np.ndarray, np.ndarray]:
     if sample_sizes is None:
         sample_sizes = [100] * n_clusters
+    n_clusters = len(centers)
     
     # Generate blobs for each cluster with specified sample sizes
     X_list = []
     y_list = []
     
     for i in range(n_clusters):
-        cluster_X, cluster_y = make_blobs(
-            n_samples=sample_sizes[i], 
-            centers=1, 
-            cluster_std=1.0,
-            center_box=(-10.0, 10.0), 
-            random_state=42 + i  # Different seed for each cluster
-        )
+        if centers is not None:
+            center = centers[i].reshape(1, -1)
+            cluster_X, cluster_y = make_blobs(
+                n_samples=sample_sizes[i], 
+                centers=center, 
+                cluster_std=1.0,
+            )
+        else:
+            cluster_X, cluster_y = make_blobs(
+                n_samples=sample_sizes[i], 
+                centers=1, 
+                cluster_std=1.0,
+                center_box=(-10.0, 10.0), 
+            )
         X_list.append(cluster_X)
         y_list.append(np.full(sample_sizes[i], i))  # Assign cluster labels
     
@@ -62,18 +75,15 @@ app.layout = html.Div([
     Output('blob-plot', 'figure'),
     Input('cluster-slider', 'value')
 )
-def update_blob_plot(n_clusters: int, proportions: list = None):
-    if proportions is None:
-        proportions = [1/n_clusters] * n_clusters
+def update_blob_plot(n_clusters: int):
     
-    # Calculate sample sizes for each cluster based on proportions
     total_samples = 300
     sample_sizes = [int(prop * total_samples) for prop in proportions]
     
-    # Adjust for rounding errors to ensure total samples = 300
     sample_sizes[0] += total_samples - sum(sample_sizes)
     
-    X, y = generate_blobs_data(n_clusters, sample_sizes)
+    centers = np.random.uniform(-5, 5, size=(n_clusters, 2))
+    X, y = generate_blobs_data(centers, sample_sizes)
     
     fig = px.scatter(
         x=X[:, 0], 
