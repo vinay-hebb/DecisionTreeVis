@@ -8,7 +8,7 @@ np.random.seed(42)
 # Configuration parameters
 BASE = 0.4  # Decay factor - each cluster has 40% of the previous cluster's size
 DEFAULT_N_CLUSTERS = 3
-TOTAL_SAMPLES = 20
+TOTAL_SAMPLES = 200
 
 def calculate_proportions(n_clusters: int) -> np.ndarray:
     """Calculate cluster proportions based on decay factor."""
@@ -45,7 +45,7 @@ def generate_blobs_data(centers: Optional[np.ndarray] = None,
             centers=center, 
             cluster_std=1.0,
         )
-        cluster_X, cluster_y = cluster_data[0], cluster_data[1]
+        cluster_X, _ = cluster_data[0], cluster_data[1]
         X_list.append(cluster_X)
         y_list.append(np.full(sample_sizes[i], i))  # Assign cluster labels
     
