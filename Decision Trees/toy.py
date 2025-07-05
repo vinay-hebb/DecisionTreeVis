@@ -69,12 +69,7 @@ app.layout = html.Div([
     ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center'})
 ])
 
-@app.callback(
-    Output('blob-plot', 'figure'),
-    Input('cluster-slider', 'value')
-)
-def update_blob_plot(n_clusters: int):
-    
+def generate_data(n_clusters):
     total_samples = 20
     sample_sizes = [int(prop * total_samples) for prop in proportions]
     sample_sizes[0] += total_samples - sum(sample_sizes)
@@ -82,8 +77,14 @@ def update_blob_plot(n_clusters: int):
     
     centers = np.random.uniform(-5, 5, size=(n_clusters, 2))
     X, y = generate_blobs_data(centers, sample_sizes)
-    
-    # Create scatter plot for data points
+    return X, y, centers
+
+@app.callback(
+    Output('blob-plot', 'figure'),
+    Input('cluster-slider', 'value')
+)
+def update_blob_plot(n_clusters: int):
+    X, y, centers = generate_data(n_clusters)
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -93,7 +94,6 @@ def update_blob_plot(n_clusters: int):
             marker=dict(
                 color=y,
                 colorscale='viridis',
-                showscale=True
             ),
             name='Data Points',
             visible=True
@@ -122,12 +122,6 @@ def update_blob_plot(n_clusters: int):
         xaxis_title="Feature 1",
         yaxis_title="Feature 2",
         showlegend=True,
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01
-        ),
         xaxis=dict(scaleanchor="y", scaleratio=1),
         width=600,
         height=600,
