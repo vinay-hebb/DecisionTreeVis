@@ -5,6 +5,7 @@ This script shows how to extract and visualize Gini impurity reduction
 for each split in a scikit-learn DecisionTreeClassifier.
 """
 
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier, plot_tree, export_text
@@ -254,6 +255,17 @@ def print_detailed_split_analysis(tree_model, feature_names=None):
     print(f"80% of total impurity reduction achieved with {splits_80} splits")
     print(f"90% of total impurity reduction achieved with {splits_90} splits")
 
+def visualize_tree(dt, feature_names, target_names):
+    plt.figure()
+    plot_tree(dt, 
+             feature_names=feature_names,
+             class_names=target_names,
+             filled=True,
+             rounded=True,
+             fontsize=10)
+    plt.title('Decision Tree with Gini Impurity Information', fontsize=14, pad=20)
+    plt.show()
+
 def main():
     """
     Main function to demonstrate Gini impurity visualization.
@@ -262,15 +274,20 @@ def main():
     print("=" * 50)
     
     # Load dataset using data_generator
-    from data_generator import generate_data
+    from data_generator import generate_data, generate_blobs_data
     
-    X, y, _ = generate_data(2)
+    # X, y, _ = generate_data(2)
+    centers = np.array([[-1, 0], [1, 0]])
+    X, y = generate_blobs_data(centers)
     feature_names, target_names = ['X0', 'X1'], ['1', '0']
     
     # Split the data
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.3, stratify=y
     )
+    from utils import plot_dash_data
+    fig = plot_dash_data(X_train, y_train, centers)
+    fig.write_html('my_plot.html', auto_open=True)
     
     # Create and fit decision tree
     print("Training Decision Tree Classifier...")
@@ -294,6 +311,7 @@ def main():
     print_detailed_split_analysis(dt, feature_names)
     print()
     
+    visualize_tree(dt, feature_names, target_names)
     # Create visualizations
     print("Creating visualizations...")
     visualize_gini_impurity_reduction(dt, feature_names)
@@ -304,17 +322,6 @@ def main():
     tree_text = export_text(dt, feature_names=feature_names, show_weights=True)
     print(tree_text)
     
-    # Visualize the tree
-    plt.figure(figsize=(20, 12))
-    plot_tree(dt, 
-             feature_names=feature_names,
-             class_names=target_names,
-             filled=True,
-             rounded=True,
-             fontsize=10)
-    plt.title('Decision Tree with Gini Impurity Information', fontsize=14, pad=20)
-    plt.show()
-
 if __name__ == "__main__":
     seed_everything()
     main() 
