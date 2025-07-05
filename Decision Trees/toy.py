@@ -6,6 +6,8 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 from data_generator import generate_data
+from utils import seed_everything, plot_dash_data
+seed_everything()
 
 app = dash.Dash(__name__)
 
@@ -37,49 +39,7 @@ app.layout = html.Div([
 )
 def update_blob_plot(n_clusters: int):
     X, y, centers = generate_data(n_clusters)
-    fig = go.Figure()
-    fig.add_trace(
-        go.Scatter(
-            x=X[:, 0],
-            y=X[:, 1],
-            mode='markers',
-            marker=dict(
-                color=y,
-                colorscale='viridis',
-            ),
-            name='Data Points',
-            visible=True
-        )
-    )
-    
-    # Add centers as a separate trace
-    fig.add_trace(
-        go.Scatter(
-            x=centers[:, 0],
-            y=centers[:, 1],
-            mode='markers',
-            marker=dict(
-                size=15,
-                symbol='x',
-                color='red',
-                line=dict(width=2, color='darkred')
-            ),
-            name='Centers',
-            visible=True
-        )
-    )
-    
-    fig.update_layout(
-        title_x=0.5,
-        xaxis_title="Feature 1",
-        yaxis_title="Feature 2",
-        showlegend=True,
-        xaxis=dict(scaleanchor="y", scaleratio=1),
-        width=600,
-        height=600,
-        margin=dict(l=50, r=50, t=50, b=50)
-    )
-    
+    fig = plot_dash_data(X, y, centers)
     return fig
 
 if __name__ == "__main__":
