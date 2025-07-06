@@ -37,12 +37,13 @@ def plot_impurity_vs_depth(tree):
     weighted_impurities = []
     depths_list = []
     
+    total_samples = np.sum(depth_samples[0])
     for depth in sorted(depth_impurities.keys()):
         impurities = depth_impurities[depth]
         samples = depth_samples[depth]
         
-        # Calculate weighted average impurity
-        total_samples = sum(samples)
+        # # Calculate weighted average impurity
+        # total_samples = sum(samples)
         weighted_impurity = sum(imp * sample for imp, sample in zip(impurities, samples)) / total_samples
         
         weighted_impurities.append(weighted_impurity)

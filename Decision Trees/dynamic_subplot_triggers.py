@@ -30,10 +30,11 @@ def main():
     Main function to demonstrate Gini impurity visualization.
     """
     # Load dataset using data_generator
-    from data_generator import generate_data, generate_blobs_data
+    from data_generator import generate_data, generate_blobs_data, generate_chessboard_data
     
-    proportions = calculate_proportions(DEFAULT_N_CLUSTERS)
-    X, y, centers = generate_data(DEFAULT_N_CLUSTERS, TOTAL_SAMPLES, proportions)
+    # proportions = calculate_proportions(DEFAULT_N_CLUSTERS)
+    # X, y, centers = generate_data(DEFAULT_N_CLUSTERS, TOTAL_SAMPLES, proportions)
+    X, y, centers = generate_chessboard_data(TOTAL_SAMPLES, 2, 4)
     # centers = np.array([[-1, 0], [1, 0]])
     # X, y = generate_blobs_data(centers)
     feature_names, target_names = ['X0', 'X1'], ['1', '0']
@@ -55,11 +56,11 @@ def main():
     )
     dt.fit(X_train, y_train)
     # print(f"depth={None}, y={np.sum(dt.predict(X_train))}")
-    # visualize_tree(dt, ['X0', 'X1'], ['0', '1'])
+    # visualize_tree(dt, feature_names, target_names)
     # for d in [0,1,2]:
     #     truncated_tree = truncate_tree_to_depth(dt, d)
     #     print(f"depth={d}, y={np.sum(truncated_tree.predict(X_train))}")
-    #     visualize_tree(truncated_tree, ['X0', 'X1'], ['0', '1'])
+    #     visualize_tree(truncated_tree, feature_names, target_names)
     
     fig = plot_dash_data(X_train, y_train, centers, dt)
     impurity_fig = plot_impurity_vs_depth(dt)
