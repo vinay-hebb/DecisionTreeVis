@@ -286,8 +286,8 @@ def main():
         X, y, test_size=0.3, stratify=y
     )
     from utils import plot_dash_data
-    fig = plot_dash_data(X_train, y_train, centers)
-    fig.write_html('my_plot.html', auto_open=True)
+    # fig = plot_dash_data(X_train, y_train, centers)
+    # fig.write_html('my_plot.html', auto_open=True)
     
     # Create and fit decision tree
     print("Training Decision Tree Classifier...")
@@ -307,6 +307,9 @@ def main():
     print(f"Test accuracy: {dt.score(X_test, y_test):.4f}")
     print()
     
+    # fig, impurity_fig = plot_dash_data(X_train, y_train, centers, dt)
+    # fig.write_html('data.html', auto_open=True)
+    # impurity_fig.write_html('impurity_vs_depth.html', auto_open=True)
     # Print detailed split analysis
     print_detailed_split_analysis(dt, feature_names)
     print()
