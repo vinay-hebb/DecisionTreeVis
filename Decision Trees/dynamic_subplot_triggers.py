@@ -7,23 +7,23 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from utils import plot_dash_data, plot_impurity_vs_depth
+from utils import plot_dash_data, plot_impurity_vs_depth, seed_everything
 from simple_gini_visualization import truncate_tree_to_depth, visualize_tree
 
+# seed_everything(12)
+# seed_everything(191)
+seed_everything(191)
 app = dash.Dash(__name__)
 def main():
     """
     Main function to demonstrate Gini impurity visualization.
     """
-    print("Gini Impurity Reduction Visualization")
-    print("=" * 50)
-    
     # Load dataset using data_generator
     from data_generator import generate_data, generate_blobs_data
     
-    # X, y, _ = generate_data(2)
-    centers = np.array([[-1, 0], [1, 0]])
-    X, y = generate_blobs_data(centers)
+    X, y, centers = generate_data(2)
+    # centers = np.array([[-1, 0], [1, 0]])
+    # X, y = generate_blobs_data(centers)
     feature_names, target_names = ['X0', 'X1'], ['1', '0']
     
     X_train, X_test, y_train, y_test = train_test_split(

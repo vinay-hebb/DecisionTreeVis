@@ -2,9 +2,6 @@ import numpy as np
 from sklearn.datasets import make_blobs
 from typing import Tuple, Optional
 
-# Set random seed for reproducibility
-np.random.seed(42)
-
 # Configuration parameters
 BASE = 0.4  # Decay factor - each cluster has 40% of the previous cluster's size
 DEFAULT_N_CLUSTERS = 3
