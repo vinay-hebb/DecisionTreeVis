@@ -2,17 +2,6 @@ import numpy as np
 from sklearn.datasets import make_blobs
 from typing import Tuple, Optional
 
-# Configuration parameters
-BASE = 0.4  # Decay factor - each cluster has 40% of the previous cluster's size
-DEFAULT_N_CLUSTERS = 3
-TOTAL_SAMPLES = 200
-
-def calculate_proportions(n_clusters: int) -> np.ndarray:
-    """Calculate cluster proportions based on decay factor."""
-    proportions = [BASE**i for i in range(n_clusters)]
-    proportions = np.array(proportions) / np.sum(proportions)
-    return proportions
-
 def generate_blobs_data(centers: Optional[np.ndarray] = None, 
                        sample_sizes: Optional[list[int]] = None) -> Tuple[np.ndarray, np.ndarray]:
     """
@@ -52,7 +41,7 @@ def generate_blobs_data(centers: Optional[np.ndarray] = None,
     
     return X, y
 
-def generate_data(n_clusters: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def generate_data(n_clusters: int, n_samples: int, proportions) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Generate complete dataset with specified number of clusters.
     
@@ -63,12 +52,10 @@ def generate_data(n_clusters: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         Tuple of (X, y, centers) where X is the feature matrix, 
         y contains cluster labels, and centers are the cluster centers
     """
-    # Calculate proportions for the given number of clusters
-    proportions = calculate_proportions(n_clusters)
     
     # Calculate sample sizes based on proportions
-    sample_sizes = [int(prop * TOTAL_SAMPLES) for prop in proportions]
-    sample_sizes[0] += TOTAL_SAMPLES - sum(sample_sizes)  # Ensure total samples is correct
+    sample_sizes = [int(prop * n_samples) for prop in proportions]
+    sample_sizes[0] += n_samples - sum(sample_sizes)  # Ensure total samples is correct
     
     # Generate random centers
     centers = np.random.uniform(-5, 5, size=(n_clusters, 2))
@@ -79,6 +66,8 @@ def generate_data(n_clusters: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     return X, y, centers
 
 if __name__ == "__main__":
+    from utils import seed_everything
+    seed_everything()
     # Test the data generation
     print("Testing data generation...")
     proportions = calculate_proportions(DEFAULT_N_CLUSTERS)

@@ -10,10 +10,21 @@ from sklearn.tree import DecisionTreeClassifier
 from utils import plot_dash_data, plot_impurity_vs_depth, seed_everything
 from simple_gini_visualization import truncate_tree_to_depth, visualize_tree
 
-# seed_everything(12)
+seed_everything(12)
 # seed_everything(191)
-seed_everything(191)
+# seed_everything(191)
 app = dash.Dash(__name__)
+# Configuration parameters
+BASE = 0.4  # Decay factor - each cluster has 40% of the previous cluster's size
+DEFAULT_N_CLUSTERS = 2
+TOTAL_SAMPLES = 500
+
+def calculate_proportions(n_clusters: int) -> np.ndarray:
+    """Calculate cluster proportions based on decay factor."""
+    proportions = [BASE**i for i in range(n_clusters)]
+    proportions = np.array(proportions) / np.sum(proportions)
+    return proportions
+
 def main():
     """
     Main function to demonstrate Gini impurity visualization.
@@ -21,7 +32,8 @@ def main():
     # Load dataset using data_generator
     from data_generator import generate_data, generate_blobs_data
     
-    X, y, centers = generate_data(2)
+    proportions = calculate_proportions(DEFAULT_N_CLUSTERS)
+    X, y, centers = generate_data(DEFAULT_N_CLUSTERS, TOTAL_SAMPLES, proportions)
     # centers = np.array([[-1, 0], [1, 0]])
     # X, y = generate_blobs_data(centers)
     feature_names, target_names = ['X0', 'X1'], ['1', '0']
@@ -36,7 +48,7 @@ def main():
     print("Training Decision Tree Classifier...")
     dt = DecisionTreeClassifier(
         criterion='gini',
-        max_depth=5,
+        max_depth=7,
         min_samples_split=2,
         min_samples_leaf=1,
         random_state=42
