@@ -24,7 +24,7 @@ def plot_impurity_vs_depth(tree):
     for node_id, info in node_info.items():
         depth = depths[node_id]
         impurity = info['impurity']
-        samples = info.get('samples', 1)  # Default to 1 if samples not available
+        samples = info['n_samples']
         
         if depth not in depth_impurities:
             depth_impurities[depth] = []
