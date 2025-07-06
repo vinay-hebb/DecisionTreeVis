@@ -7,7 +7,8 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from utils import plot_impurity_vs_depth
+from utils import plot_dash_data, plot_impurity_vs_depth
+from simple_gini_visualization import truncate_tree_to_depth, visualize_tree
 
 app = dash.Dash(__name__)
 def main():
@@ -28,7 +29,6 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.3, stratify=y
     )
-    from utils import plot_dash_data
     # fig = plot_dash_data(X_train, y_train, centers)
     # fig.write_html('my_plot.html', auto_open=True)
     
@@ -42,12 +42,19 @@ def main():
         random_state=42
     )
     dt.fit(X_train, y_train)
+    # print(f"depth={None}, y={np.sum(dt.predict(X_train))}")
+    # visualize_tree(dt, ['X0', 'X1'], ['0', '1'])
+    # for d in [0,1,2]:
+    #     truncated_tree = truncate_tree_to_depth(dt, d)
+    #     print(f"depth={d}, y={np.sum(truncated_tree.predict(X_train))}")
+    #     visualize_tree(truncated_tree, ['X0', 'X1'], ['0', '1'])
     
-    fig, impurity_fig = plot_dash_data(X_train, y_train, centers, dt)
+    fig = plot_dash_data(X_train, y_train, centers, dt)
+    impurity_fig = plot_impurity_vs_depth(dt)
     print('Plotting impurity vs depth')
-    return fig, impurity_fig, dt, X_train, y_train
+    return fig, impurity_fig, dt, X_train, y_train, centers
 
-data_fig, impurity_fig, dt, X_train, y_train = main()
+data_fig, impurity_fig, dt, X_train, y_train, centers = main()
 app.layout = html.Div([
     html.Div([
         dcc.Graph(
@@ -75,9 +82,10 @@ def update_details_plot(hoverData):
     if hoverData is None:
         return go.Figure()
 
-    # point = hoverData['points'][0]
-    # x_val = point['x']
+    point = hoverData['points'][0]
+    x_val = point['x']
     # y_val = point['y']
+    # print(point)
     
     # hovered_row = df[(df['sepal_width'] == x_val) & (df['sepal_length'] == y_val)]
     # if hovered_row.empty:
@@ -89,9 +97,12 @@ def update_details_plot(hoverData):
 
     # fig = px.scatter(filtered_df, x='petal_width', y='petal_length', color='species',
     #                  title=f"Details for {hovered_row['species']}")
-    print('Plotting data')
-    fig = data_fig
-    return fig
+    truncated_tree = truncate_tree_to_depth(dt, x_val)
+    # new tree seems to be generating but contour does not change
+    data_fig = plot_dash_data(X_train, y_train, centers, truncated_tree)
+    # print(f"{data_fig.data[2].name}, z={np.sum(data_fig.data[2].z)}, id={id(truncated_tree)}, {truncated_tree}")
+    print(f'Plotting data with truncated decision tree with depth = {x_val}')
+    return data_fig
 
 if __name__ == '__main__':
     app.run_server(debug=True)

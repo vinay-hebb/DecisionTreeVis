@@ -97,21 +97,22 @@ def plot_dash_data(X, y, centers, tree=None):
     )
     
     # Add centers as a separate trace
-    fig.add_trace(
-        go.Scatter(
-            x=centers[:, 0],
-            y=centers[:, 1],
-            mode='markers',
-            marker=dict(
-                size=15,
-                symbol='x',
-                color='red',
-                line=dict(width=2, color='darkred')
-            ),
-            name='Centers',
-            visible=True
+    if centers is not None:
+        fig.add_trace(
+            go.Scatter(
+                x=centers[:, 0],
+                y=centers[:, 1],
+                mode='markers',
+                marker=dict(
+                    size=15,
+                    symbol='x',
+                    color='red',
+                    line=dict(width=2, color='darkred')
+                ),
+                name='Centers',
+                visible=True
+            )
         )
-    )
     
     # Add decision boundaries if tree is provided
     if tree is not None:
@@ -126,6 +127,7 @@ def plot_dash_data(X, y, centers, tree=None):
         
         # Get predictions for the mesh grid
         Z = tree.predict(np.c_[xx.ravel(), yy.ravel()])
+        # print(f'plot_dash_data: {np.sum(Z)}')
         Z = Z.reshape(xx.shape)
         
         # Add decision boundary contour
@@ -153,8 +155,4 @@ def plot_dash_data(X, y, centers, tree=None):
         margin=dict(l=50, r=50, t=50, b=50)
     )
 
-    impurity_fig = None
-    # Create impurity vs depth plot if tree is provided
-    if tree is not None:
-        impurity_fig = plot_impurity_vs_depth(tree)
-    return fig, impurity_fig
+    return fig

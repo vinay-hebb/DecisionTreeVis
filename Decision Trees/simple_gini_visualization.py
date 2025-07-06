@@ -266,6 +266,63 @@ def visualize_tree(dt, feature_names, target_names):
     plt.title('Decision Tree with Gini Impurity Information', fontsize=14, pad=20)
     plt.show()
 
+def truncate_tree_to_depth(tree, max_depth):
+    """
+    Truncate a trained decision tree to a specified maximum depth.
+    
+    Args:
+        tree: sklearn DecisionTreeClassifier (already fitted)
+        max_depth: int, maximum depth to truncate to
+        
+    Returns:
+        sklearn DecisionTreeClassifier: truncated tree with same structure up to max_depth
+    """
+    from sklearn.tree import DecisionTreeClassifier
+    import numpy as np
+    
+    # Create a new tree with the same parameters
+    truncated_tree = DecisionTreeClassifier(
+        criterion=tree.criterion,
+        max_depth=max_depth,
+        min_samples_split=tree.min_samples_split,
+        min_samples_leaf=tree.min_samples_leaf,
+        random_state=tree.random_state
+    )
+    
+    # Create a deep copy of the tree structure
+    from copy import deepcopy
+    truncated_tree.tree_ = deepcopy(tree.tree_)
+    
+    # Copy essential attributes from the original tree
+    truncated_tree.n_outputs_ = tree.n_outputs_
+    truncated_tree.n_classes_ = tree.n_classes_
+    truncated_tree.classes_ = tree.classes_
+    
+    # Get the tree structure
+    tree_structure = truncated_tree.tree_
+    
+    # Find nodes at max_depth and convert them to leaves
+    def truncate_nodes(node_id, current_depth):
+        if current_depth >= max_depth:
+            # Convert this node to a leaf
+            tree_structure.children_left[node_id] = -1
+            tree_structure.children_right[node_id] = -1
+            return
+        
+        # Recursively process children if they exist
+        left_child = tree_structure.children_left[node_id]
+        right_child = tree_structure.children_right[node_id]
+        
+        if left_child != -1:
+            truncate_nodes(left_child, current_depth + 1)
+        if right_child != -1:
+            truncate_nodes(right_child, current_depth + 1)
+    
+    # Start truncation from root
+    truncate_nodes(0, 0)
+    
+    return truncated_tree
+
 def main():
     """
     Main function to demonstrate Gini impurity visualization.
