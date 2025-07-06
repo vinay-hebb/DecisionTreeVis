@@ -70,15 +70,18 @@ def plot_impurity_vs_depth(tree):
         yaxis_title='Gini Impurity',
         showlegend=True,
         width=600,
-        height=400,
+        height=600,
         margin=dict(l=50, r=50, t=50, b=50)
     )
     return impurity_fig
 
 def plot_dash_data(X, y, centers, tree=None):
     import plotly.graph_objects as go
+    import numpy as np
 
     fig = go.Figure()
+    
+    # Add data points
     fig.add_trace(
         go.Scatter(
             x=X[:, 0],
@@ -109,6 +112,35 @@ def plot_dash_data(X, y, centers, tree=None):
             visible=True
         )
     )
+    
+    # Add decision boundaries if tree is provided
+    if tree is not None:
+        # Create a mesh grid for decision boundaries
+        x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
+        y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
+        
+        xx, yy = np.meshgrid(
+            np.linspace(x_min, x_max, 100),
+            np.linspace(y_min, y_max, 100)
+        )
+        
+        # Get predictions for the mesh grid
+        Z = tree.predict(np.c_[xx.ravel(), yy.ravel()])
+        Z = Z.reshape(xx.shape)
+        
+        # Add decision boundary contour
+        fig.add_trace(
+            go.Contour(
+                x=np.linspace(x_min, x_max, 100),
+                y=np.linspace(y_min, y_max, 100),
+                z=Z,
+                colorscale='viridis',
+                opacity=0.3,
+                showscale=False,
+                name='Decision Boundary',
+                visible=True
+            )
+        )
     
     fig.update_layout(
         title_x=0.5,

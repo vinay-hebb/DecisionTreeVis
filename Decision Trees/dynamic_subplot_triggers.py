@@ -36,7 +36,7 @@ def main():
     print("Training Decision Tree Classifier...")
     dt = DecisionTreeClassifier(
         criterion='gini',
-        max_depth=2,
+        max_depth=5,
         min_samples_split=2,
         min_samples_leaf=1,
         random_state=42
@@ -51,20 +51,25 @@ data_fig, impurity_fig, dt, X_train, y_train = main()
 app.layout = html.Div([
     html.Div([
         dcc.Graph(
-            id='scatter-plot',
-            figure=impurity_fig,
-            style={'width': '48%', 'display': 'inline-block'}
+            id='data-decision-boundaries-full-plot',
+            figure=data_fig,
+            style={'width': '32%', 'display': 'inline-block'}
         ),
         dcc.Graph(
-            id='details-plot',
-            style={'width': '48%', 'display': 'inline-block'}
+            id='impurity-vs-depth-plot',
+            figure=impurity_fig,
+            style={'width': '32%', 'display': 'inline-block'}
+        ),
+        dcc.Graph(
+            id='data-decision-boundaries-plot',
+            style={'width': '32%', 'display': 'inline-block'}
         )
     ])
 ])
 
 @app.callback(
-    Output('details-plot', 'figure'),
-    Input('scatter-plot', 'hoverData')
+    Output('data-decision-boundaries-plot', 'figure'),
+    Input('impurity-vs-depth-plot', 'hoverData')
 )
 def update_details_plot(hoverData):
     if hoverData is None:
