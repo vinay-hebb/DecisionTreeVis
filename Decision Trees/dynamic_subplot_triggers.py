@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from utils import plot_dash_data, plot_impurity_vs_depth, seed_everything
 from simple_gini_visualization import truncate_tree_to_depth, visualize_tree
-
+from plot_tree import plot_tree_graph
 seed_everything(12)
 # seed_everything(191)
 # seed_everything(191)
@@ -84,6 +84,12 @@ app.layout = html.Div([
             id='data-decision-boundaries-plot',
             style={'width': '32%', 'display': 'inline-block'}
         )
+    ]),
+    html.Div([
+        dcc.Graph(
+            id='tree-plot',
+            figure=plot_tree_graph(dt),
+        )
     ])
 ])
 
@@ -100,20 +106,8 @@ def update_details_plot(hoverData):
     # y_val = point['y']
     # print(point)
     
-    # hovered_row = df[(df['sepal_width'] == x_val) & (df['sepal_length'] == y_val)]
-    # if hovered_row.empty:
-    #     return go.Figure()
-    
-    # hovered_row = hovered_row.iloc[0]
-    # print(f"Hovered point: x={x_val}, y={y_val}, species={hovered_row['species']}")
-    # filtered_df = df[df['species'] == hovered_row['species']]
-
-    # fig = px.scatter(filtered_df, x='petal_width', y='petal_length', color='species',
-    #                  title=f"Details for {hovered_row['species']}")
     truncated_tree = truncate_tree_to_depth(dt, x_val)
-    # new tree seems to be generating but contour does not change
     data_fig = plot_dash_data(X_train, y_train, centers, truncated_tree)
-    # print(f"{data_fig.data[2].name}, z={np.sum(data_fig.data[2].z)}, id={id(truncated_tree)}, {truncated_tree}")
     print(f'Plotting data with truncated decision tree with depth = {x_val}')
     return data_fig
 
