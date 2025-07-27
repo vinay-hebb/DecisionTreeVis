@@ -128,6 +128,3 @@ Traverse the tree according to the split conditions until a leaf is reached, the
 - <ques>Decision boundary can be visualized for each depth?</ques>
 - <ques>In impurity vs depth, when root node and children hovered, it shows same decision boundary, why?</ques>
     - <ques>When we hover on DecBound(level=1), it should show 2 regions - it is not happening</ques>
-
-
-https://scikit-learn.org/stable/modules/tree.html#mathematical-formulation

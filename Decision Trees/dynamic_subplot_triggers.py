@@ -71,25 +71,26 @@ data_fig, impurity_fig, dt, X_train, y_train, centers, feature_names, target_nam
 app.layout = html.Div([
     html.Div([
         dcc.Graph(
-            id='data-decision-boundaries-full-plot',
-            figure=data_fig,
-            style={'width': '32%', 'display': 'inline-block'}
+            id='tree-plot',
+            figure=plot_tree_graph(dt, feature_names, target_names),
+            style={'width': '30%', 'display': 'inline-block'}
         ),
         dcc.Graph(
             id='impurity-vs-depth-plot',
             figure=impurity_fig,
-            style={'width': '32%', 'display': 'inline-block'}
+            style={'width': '30%', 'display': 'inline-block'}
         ),
         dcc.Graph(
             id='data-decision-boundaries-plot',
-            style={'width': '32%', 'display': 'inline-block'}
+            style={'width': '30%', 'display': 'inline-block'}
         )
     ]),
     html.Div([
         dcc.Graph(
-            id='tree-plot',
-            figure=plot_tree_graph(dt, feature_names, target_names),
-        )
+            id='data-decision-boundaries-full-plot',
+            figure=data_fig,
+            style={'width': '32%', 'display': 'inline-block'}
+        ),
     ])
 ])
 
@@ -102,13 +103,13 @@ def update_details_plot(hoverData):
         return go.Figure()
 
     point = hoverData['points'][0]
-    x_val = point['x']
-    # y_val = point['y']
+    # x_val = point['x']
+    hovered_depth = point['y']
     # print(point)
     
-    truncated_tree = truncate_tree_to_depth(dt, x_val)
-    data_fig = plot_dash_data(X_train, y_train, centers, truncated_tree)
-    print(f'Plotting data with truncated decision tree with depth = {x_val}')
+    truncated_tree = truncate_tree_to_depth(dt, hovered_depth)
+    data_fig = plot_dash_data(X_train, y_train, centers, truncated_tree, title_s='Decision regions for subtree')
+    print(f'Plotting data with truncated decision tree with depth = {hovered_depth}')
     return data_fig
 
 if __name__ == '__main__':

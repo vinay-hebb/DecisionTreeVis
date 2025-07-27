@@ -82,7 +82,7 @@ def plot_tree_graph(dt, feature_names=None, class_names=None):
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         plot_bgcolor='white',
         margin=dict(l=20, r=20, t=40, b=20),
-        height=500
+        height=600
     )
     return fig
 

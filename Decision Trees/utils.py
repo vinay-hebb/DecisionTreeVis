@@ -55,28 +55,31 @@ def plot_impurity_vs_depth(tree):
     # Add weighted impurity line
     impurity_fig.add_trace(
         go.Scatter(
-            x=depths_list,
-            y=weighted_impurities,
+            x=weighted_impurities,
+            y=depths_list,
             mode='lines+markers',
             line=dict(color='blue', width=2),
             marker=dict(size=8, color='blue'),
             name='Weighted Average Impurity',
-            visible=True
+            visible=True,
+            showlegend=False,
         )
     )
     
     impurity_fig.update_layout(
-        title='Node Impurity by Tree Depth',
-        xaxis_title='Tree Depth',
-        yaxis_title='Gini Impurity',
+        title='Node Impurity vs Tree Depth',
+        xaxis_title='Gini Impurity',
+        yaxis_title='Tree Depth',
         showlegend=True,
-        width=600,
+        # width=600,
         height=600,
-        margin=dict(l=50, r=50, t=50, b=50)
+        margin=dict(l=50, r=50, t=50, b=50),
+        yaxis=dict(autorange='reversed'),
+        xaxis=dict(autorange='reversed'),
     )
     return impurity_fig
 
-def plot_dash_data(X, y, centers, tree=None):
+def plot_dash_data(X, y, centers, tree=None, feature_names=['X0', 'X1'], target_names=[0, 1], title_s=None):
     import plotly.graph_objects as go
     import numpy as np
 
@@ -146,9 +149,10 @@ def plot_dash_data(X, y, centers, tree=None):
         )
     
     fig.update_layout(
+        title=title_s,
         title_x=0.5,
-        xaxis_title="Feature 1",
-        yaxis_title="Feature 2",
+        xaxis_title=feature_names[0],
+        yaxis_title=feature_names[1],
         showlegend=True,
         xaxis=dict(scaleanchor="y", scaleratio=1),
         width=600,
