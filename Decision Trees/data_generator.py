@@ -88,6 +88,7 @@ def generate_chessboard_data(n_samples: int = 500, n_rows: int = 2, n_cols: int 
             # Alternate classes like a chessboard
             labels.append((row + col) % n_classes)
     labels = np.array(labels)
+    labels = np.random.choice(np.arange(n_classes), size=n_rows*n_cols, replace=True)
 
     # Assign samples per cluster as evenly as possible
     samples_per_cluster = [n_samples // n_clusters] * n_clusters

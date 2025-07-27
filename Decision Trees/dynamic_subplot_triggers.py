@@ -17,7 +17,7 @@ app = dash.Dash(__name__)
 # Configuration parameters
 BASE = 0.4  # Decay factor - each cluster has 40% of the previous cluster's size
 DEFAULT_N_CLUSTERS = 2
-TOTAL_SAMPLES = 500
+TOTAL_SAMPLES = 16
 
 def calculate_proportions(n_clusters: int) -> np.ndarray:
     """Calculate cluster proportions based on decay factor."""
@@ -65,9 +65,9 @@ def main():
     fig = plot_dash_data(X_train, y_train, centers, dt)
     impurity_fig = plot_impurity_vs_depth(dt)
     print('Plotting impurity vs depth')
-    return fig, impurity_fig, dt, X_train, y_train, centers
+    return fig, impurity_fig, dt, X_train, y_train, centers, feature_names, target_names
 
-data_fig, impurity_fig, dt, X_train, y_train, centers = main()
+data_fig, impurity_fig, dt, X_train, y_train, centers, feature_names, target_names = main()
 app.layout = html.Div([
     html.Div([
         dcc.Graph(
@@ -88,7 +88,7 @@ app.layout = html.Div([
     html.Div([
         dcc.Graph(
             id='tree-plot',
-            figure=plot_tree_graph(dt),
+            figure=plot_tree_graph(dt, feature_names, target_names),
         )
     ])
 ])
