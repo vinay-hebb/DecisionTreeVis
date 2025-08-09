@@ -37,7 +37,7 @@ def main():
     X, y, centers = generate_chessboard_data(TOTAL_SAMPLES, 2, 4)
     # centers = np.array([[-1, 0], [1, 0]])
     # X, y = generate_blobs_data(centers)
-    feature_names, target_names = ['X0', 'X1'], ['1', '0']
+    feature_names, target_names = ['X0', 'X1'], ['0', '1']
     
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.3, stratify=y
@@ -93,6 +93,7 @@ app.layout = html.Div([
         ),
     ])
 ])
+server = app.server
 
 @app.callback(
     Output('data-decision-boundaries-plot', 'figure'),

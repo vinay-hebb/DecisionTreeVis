@@ -93,7 +93,13 @@ def plot_dash_data(X, y, centers, tree=None, feature_names=['X0', 'X1'], target_
             mode='markers',
             marker=dict(
                 color=y,
-                colorscale='viridis',
+                # Other possible colorscales:
+                # colorscale=[[0, 'red'], [1, 'green']],
+                # colorscale=[[0, 'orange'], [1, 'purple']],
+                # colorscale=[[0, 'cyan'], [1, 'magenta']],
+                # colorscale=[[0, 'yellow'], [1, 'brown']],
+                # colorscale=[[0, 'navy'], [1, 'gold']],
+                colorscale=[[0, 'blue'], [1, 'magenta']],
             ),
             name='Data Points',
             visible=True
@@ -114,7 +120,8 @@ def plot_dash_data(X, y, centers, tree=None, feature_names=['X0', 'X1'], target_
                     line=dict(width=2, color='darkred')
                 ),
                 name='Centers',
-                visible=True
+                visible='legendonly',
+                showlegend=True,
             )
         )
     
@@ -140,11 +147,14 @@ def plot_dash_data(X, y, centers, tree=None, feature_names=['X0', 'X1'], target_
                 x=np.linspace(x_min, x_max, 100),
                 y=np.linspace(y_min, y_max, 100),
                 z=Z,
-                colorscale='viridis',
+                # colorscale='viridis',
+                colorscale=[[0, 'blue'], [1, 'magenta']],
                 opacity=0.3,
                 showscale=False,
                 name='Decision Boundary',
-                visible=True
+                visible=True,  # Default to visible
+                legendgroup='contour',
+                showlegend=True
             )
         )
     

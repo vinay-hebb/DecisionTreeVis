@@ -28,14 +28,19 @@ def plot_tree_graph(dt, feature_names=None, class_names=None):
     for node_id in range(n_nodes):
         x, y = positions[node_id]
         nodes.append((x, y))
-        # Node label
+        value = tree_.value[node_id][0]
+        predicted_class_idx = value.argmax()
+        if class_names is not None: predicted_class = class_names[predicted_class_idx]
+        else:                       predicted_class = str(predicted_class_idx)
         if tree_.children_left[node_id] == _tree.TREE_LEAF:
-            value = tree_.value[node_id][0]
-            label = f"Leaf<br>samples={tree_.n_node_samples[node_id]}<br>value={value}"
+            label = (
+                f"Leaf<br>samples={value*tree_.n_node_samples[node_id]}"
+                f"<br>predict: {predicted_class}"
+            )
         else:
             feature = feature_names[tree_.feature[node_id]] if feature_names is not None else f"X[{tree_.feature[node_id]}]"
             threshold = tree_.threshold[node_id]
-            label = f"{feature} <= {threshold:.2f}<br>samples={tree_.n_node_samples[node_id]}"
+            label = f"{feature} <= {threshold:.2f}<br>samples={value*tree_.n_node_samples[node_id]}<br>predict: {predicted_class}"
         labels[node_id] = label
 
         # Edges
