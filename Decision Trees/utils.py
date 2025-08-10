@@ -74,7 +74,12 @@ def plot_impurity_vs_depth(tree):
         # width=600,
         height=600,
         margin=dict(l=50, r=50, t=50, b=50),
-        yaxis=dict(autorange='reversed'),
+        yaxis=dict(
+            autorange='reversed',
+            tickmode='array',
+            tickvals=list(sorted(set(depths_list))),
+            tickformat='d'
+        ),
         xaxis=dict(autorange='reversed'),
     )
     return impurity_fig

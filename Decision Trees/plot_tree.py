@@ -34,13 +34,12 @@ def plot_tree_graph(dt, feature_names=None, class_names=None):
         else:                       predicted_class = str(predicted_class_idx)
         if tree_.children_left[node_id] == _tree.TREE_LEAF:
             label = (
-                f"Leaf<br>samples={value*tree_.n_node_samples[node_id]}"
-                f"<br>predict: {predicted_class}"
+                f"Leaf<br><br>samples={value*tree_.n_node_samples[node_id]}, predict: {predicted_class}"
             )
         else:
             feature = feature_names[tree_.feature[node_id]] if feature_names is not None else f"X[{tree_.feature[node_id]}]"
             threshold = tree_.threshold[node_id]
-            label = f"{feature} <= {threshold:.2f}<br>samples={value*tree_.n_node_samples[node_id]}<br>predict: {predicted_class}"
+            label = f"{feature} <= {threshold:.2f}<br><br>samples={value*tree_.n_node_samples[node_id]}, predict: {predicted_class}"
         labels[node_id] = label
 
         # Edges
