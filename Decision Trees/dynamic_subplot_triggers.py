@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 import numpy as np
+from dash import callback_context
 
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -103,42 +104,42 @@ server = app.server
     [
         Output('tree-plot', 'figure'),
         Output('impurity-vs-depth-plot', 'figure'),
+        Output('data-decision-boundaries-plot', 'figure'),
     ],
-    Input('submit-seed', 'n_clicks'),
+    [
+        Input('submit-seed', 'n_clicks'),
+        Input('impurity-vs-depth-plot', 'hoverData')
+    ],
     State('seed-input', 'value')
 )
-def update_seed(n_clicks, seed):
+def update_all(n_clicks, hoverData, seed):
+    # On initial load, just return empty figures
     if n_clicks == 0 or seed is None:
-        # On initial load, just return the original figures
-        return (
-            go.Figure(),
-            go.Figure(),
+        return go.Figure(), go.Figure(), go.Figure()
+
+    global X_train, y_train, centers, dt
+
+    ctx = callback_context
+    if ctx.triggered and ctx.triggered[0]['prop_id'].startswith('impurity-vs-depth-plot.hoverData') and \
+        hoverData is not None and 'points' in hoverData and len(hoverData['points']) > 0:
+        point = hoverData['points'][0]
+        hovered_depth = point['y']
+        truncated_tree = truncate_tree_to_depth(dt, hovered_depth)
+        data_decision_fig = plot_dash_data(
+            X_train, y_train, centers, truncated_tree, title_s='Decision regions for subtree'
         )
-    # Re-run main with new seed
-    global X_train, y_train, centers, dt
-    data_fig, impurity_fig, dt, X_train, y_train, centers, feature_names, target_names = main(seed)
-    return (
-        plot_tree_graph(dt, feature_names, target_names),
-        impurity_fig,
-    )
+        print(f'Plotting data with truncated decision tree with depth = {hovered_depth}')
+        tree_fig = dash.no_update
+        impurity_fig = dash.no_update
+    else:
+        data_fig, impurity_fig, dt, X_train, y_train, centers, feature_names, target_names = main(seed)
+        tree_fig = plot_tree_graph(dt, feature_names, target_names)
+        # Default: show full tree's decision boundaries
+        data_decision_fig = plot_dash_data(
+            X_train, y_train, centers, dt, title_s='Decision regions for full tree'
+        )
 
-@app.callback(
-    Output('data-decision-boundaries-plot', 'figure'),
-    Input('impurity-vs-depth-plot', 'hoverData')
-)
-def update_details_plot(hoverData):
-    if hoverData is None:
-        return go.Figure()
-
-    global X_train, y_train, centers, dt
-    point = hoverData['points'][0]
-    # x_val = point['x']
-    hovered_depth = point['y']
-    # print(point)
-    truncated_tree = truncate_tree_to_depth(dt, hovered_depth)
-    data_fig = plot_dash_data(X_train, y_train, centers, truncated_tree, title_s='Decision regions for subtree')
-    print(f'Plotting data with truncated decision tree with depth = {hovered_depth}')
-    return data_fig
+    return tree_fig, impurity_fig, data_decision_fig
 
 if __name__ == '__main__':
     app.run(debug=True, port=2221)
