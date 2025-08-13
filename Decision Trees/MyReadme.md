@@ -4,11 +4,17 @@
   imp { background-color: lightgreen; color: black; padding: 1px; border-radius: 2px; }
   underline1 { text-decoration: underline; }
 </style>
+# A quick demonstration of WebApp
+
+A GIF can communicate lot more
+
+![WebApp Demo](Demo1.gif)
+
+If you are well versed with the mathematical formulation of decision tree, you can skip to the [Webapp Section](#webapp) directly.
+
 # Decision Tree Classifier: Mathematical Formulation (scikit-learn)
 
-
 A **Decision Tree Classifier** is a supervised learning algorithm that recursively partitions the feature space to classify data points. The scikit-learn implementation uses the **CART** (Classification and Regression Trees) algorithm, which builds binary trees using the feature and threshold that yield the largest information gain (or impurity reduction).
-
 
 # Background
 Given
@@ -62,9 +68,10 @@ Where
 $G(Q_m, \theta)$ can also be thought of as weigted average impurity after the split
 
 To get the best $\theta^*$, we can choose as below
-$$\theta^* = \operatorname{argmin}_\theta  G(Q_m, \theta)$$
 
-<ques>Is it impurity reduction or impurity?</ques> <imp>It does not matter since impurity of node $m$ does not change with $\theta$</imp>
+$$\theta^* = \underset{\theta}{\operatorname{argmin}}\, G(Q_m, \theta)$$
+
+<!-- <ques>Is it impurity reduction or impurity?</ques> <imp>It does not matter since impurity of node $m$ does not change with $\theta$</imp> -->
 
 Note that
 1. We optimize over $\theta=(j, t_m)$ i.e., over both features $j$ and thresholds $t_m$
@@ -84,7 +91,7 @@ Recurse for subsets $Q_m^{left}$ and $Q_m^{right}$ until the maximum allowable d
 
 # Inferencing algorithm
 
-Given a trained decision tree and a new input sample $x = (x_1, x_2, \ldots, x_p)$:
+Given a trained decision tree and a new input sample $x$:
 
 1. **Start at the root node.**
 2. **At each internal node:**
@@ -95,25 +102,23 @@ Given a trained decision tree and a new input sample $x = (x_1, x_2, \ldots, x_p
    - For classification, the predicted class is:
      $$\hat{y} = \underset{k \in \{0, \ldots, K-1\}}{\operatorname{argmax}} \; p_{lk}$$
      where $p_{lk}$ is the proportion of class $k$ samples in leaf $l$.
-   - For regression, the prediction is:
-     $$\hat{y} = \frac{1}{n_l} \sum_{i \in Q_l} y_i$$
-     where $n_l$ is the number of samples in leaf $l$ and $Q_l$ is the set of samples in $l$.
 
-**Summary:**  
+<!-- <note>**Summary:**</note>
 Traverse the tree according to the split conditions until a leaf is reached, then output the majority class (classification) or mean value (regression) of that leaf.
-
-# <note>WebApp</note>
+ -->
+# WebApp
 
 ## How WebApp works?
 1. A user inputs random seed and submits. This geneates data $(X, y)$.
 2. A decision tree classifier(single tree) is trained on the generated data
-3. Trained decision tree and weighted average impurity for each depth is visualized
+3. Trained decision tree and node impurity(or weighted average impurity) for each depth is visualized
 4. When a user hovers on impurity vs depth plot, a truncated decision tree(tree truncated upto hovered depth) is created using trained decision tree
 5. Using truncated tree, data is reclassified to provide insights about how decision regions, split conditions are formed
 
 ## Note
 1. When user hovers on node $m$ with depth $d$, decision boundaries are visualized for depth=$d$ rather than node $m$(i.e., all nodes with depth=$d$ are considered leaf nodes)
 2. Sometimes it can so happen that decision boundary regions dont change with depth, this is possible as tree may predict the same label after the split
+3. Node impurity vs Tree depth figure has reversed x and y axis
 
 ## Decision Tree Structure figure
 1. When you hover on any node $m$, it shows 2 sets of information is visible. 
@@ -126,6 +131,7 @@ Traverse the tree according to the split conditions until a leaf is reached, the
 
 ## Decision regions of subtree figure
 1. This shows decision regions considering a given truncated tree
+2. Decision regions are shown with lighter color of corresponding samples
 
 ## Node impurity vs Tree depth figure
 
@@ -134,14 +140,26 @@ Traverse the tree according to the split conditions until a leaf is reached, the
     1. The decision boundary should reflect all splits from the root to depth $d$
     2. Classification corresponding to that depth are visualized without considering **split condition of nodes at that depth** (these conditions are used to grow the tree further). 
     3. In other words, if one hovers on $\text{depth}=d$ then regions belonging to $Q_m^{left}$ and $Q_m^{right}$ (nodes having depth $d$) are not visualized but all regions belonging to node $m$ having depth lesser than $d$
-3. Depth is number of levels in the tree. For root node, Depth = $0$
+3. Node impurity is computed similar to quality of split defined [here](#quality-of-split) execpt that all nodes, predictions and their corresponding data are considered
+4. Depth is number of levels in the tree. For root node, Depth = $0$
     1. Number of levels is defined as depth + 1
 4. Leaf nodes dont have split condition
+5. Plot ticks are aligned with node depth in Decision Tree structure figure
+
+## Instance 1
+
+A simple demonstration of WebApp is:![Instance 1](Simple1.gif)
+- We can see how decision tree classifies easier samples on left first correctly and goes deeper to classify harder examples on right
+
+## Instance 2
+- Impurity need not reach $0$ at leaf nodes based on various hyperparameters(in this case, `max_depth=7`) and data
+![Instance 2](./NonZeroImpurity1,%20200%20samples.gif)
 
 ## Observations:
-1. We can see that weighted average impurity decreseas with depth
-2. Root node classifies entire data into 1 class which is expected
+1. We can see that node impurity decreseas with depth
+2. Root node classifies entire data into a single class(majrity class) which is expected
 3. One can see that algorithm is trying to reduce impurity as much as possible based on the decisions made at each node
+4. Impurity need not reach $0$ at leaf nodes
 
 # <note>Complexity</note>
 
