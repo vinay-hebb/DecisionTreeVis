@@ -75,11 +75,15 @@ def main(seed):
 X_train, y_train, centers, dt = None, None, None, None
 app.layout = html.Div([
     html.Div([
+        html.Label(
+            'Random Seed (for reproducible data generation):',
+            style={'marginRight': '10px', 'fontWeight': 'bold'}
+        ),
         dcc.Input(
             id='seed-input',
             type='number',
             placeholder='Enter random seed',
-            value=42,
+            value=None,
             style={'marginRight': '10px'}
         ),
         html.Button('Submit', id='submit-seed', n_clicks=0),
@@ -87,15 +91,18 @@ app.layout = html.Div([
     html.Div([
         dcc.Graph(
             id='tree-plot',
-            style={'width': '30%', 'display': 'inline-block'}
+            style={'width': '30%', 'display': 'inline-block'},
+            config={'displayModeBar': True, 'modeBarButtonsToRemove': ['pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'toggleSpikelines', 'toImage', 'sendDataToCloud', 'toggleHover', 'resetViews', 'resetViewMapbox', 'zoom3d', 'pan3d', 'orbitRotation', 'tableRotation', 'resetCameraDefault3d', 'resetCameraLastSave3d', 'hoverClosest3d', 'hoverClosestGeo', 'hoverClosestGl2d', 'hoverClosestPie', 'toggleHover', 'resetViews', 'resetViewMapbox', 'zoom3d', 'pan3d', 'orbitRotation', 'tableRotation', 'resetCameraDefault3d', 'resetCameraLastSave3d', 'hoverClosest3d', 'hoverClosestGeo', 'hoverClosestGl2d', 'hoverClosestPie']}
         ),
         dcc.Graph(
             id='impurity-vs-depth-plot',
-            style={'width': '30%', 'display': 'inline-block'}
+            style={'width': '30%', 'display': 'inline-block'},
+            config={'displayModeBar': True, 'modeBarButtonsToRemove': ['pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'toggleSpikelines', 'toImage', 'sendDataToCloud', 'toggleHover', 'resetViews', 'resetViewMapbox', 'zoom3d', 'pan3d', 'orbitRotation', 'tableRotation', 'resetCameraDefault3d', 'resetCameraLastSave3d', 'hoverClosest3d', 'hoverClosestGeo', 'hoverClosestGl2d', 'hoverClosestPie', 'toggleHover', 'resetViews', 'resetViewMapbox', 'zoom3d', 'pan3d', 'orbitRotation', 'tableRotation', 'resetCameraDefault3d', 'resetCameraLastSave3d', 'hoverClosest3d', 'hoverClosestGeo', 'hoverClosestGl2d', 'hoverClosestPie']}
         ),
         dcc.Graph(
             id='data-decision-boundaries-plot',
-            style={'width': '30%', 'display': 'inline-block'}
+            style={'width': '30%', 'display': 'inline-block'},
+            config={'displayModeBar': True, 'modeBarButtonsToRemove': ['pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'toggleSpikelines', 'toImage', 'sendDataToCloud', 'toggleHover', 'resetViews', 'resetViewMapbox', 'zoom3d', 'pan3d', 'orbitRotation', 'tableRotation', 'resetCameraDefault3d', 'resetCameraLastSave3d', 'hoverClosest3d', 'hoverClosestGeo', 'hoverClosestGl2d', 'hoverClosestPie', 'toggleHover', 'resetViews', 'resetViewMapbox', 'zoom3d', 'pan3d', 'orbitRotation', 'tableRotation', 'resetCameraDefault3d', 'resetCameraLastSave3d', 'hoverClosest3d', 'hoverClosestGeo', 'hoverClosestGl2d', 'hoverClosestPie']}
         )
     ]),
 ])
