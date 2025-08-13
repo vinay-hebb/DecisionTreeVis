@@ -97,19 +97,12 @@ app.layout = html.Div([
             style={'width': '30%', 'display': 'inline-block'}
         )
     ]),
-    html.Div([
-        dcc.Graph(
-            id='data-decision-boundaries-full-plot',
-            style={'width': '32%', 'display': 'inline-block'}
-        ),
-    ])
 ])
 server = app.server
 @app.callback(
     [
         Output('tree-plot', 'figure'),
         Output('impurity-vs-depth-plot', 'figure'),
-        Output('data-decision-boundaries-full-plot', 'figure')
     ],
     Input('submit-seed', 'n_clicks'),
     State('seed-input', 'value')
@@ -120,7 +113,6 @@ def update_seed(n_clicks, seed):
         return (
             go.Figure(),
             go.Figure(),
-            go.Figure(),
         )
     # Re-run main with new seed
     global X_train, y_train, centers, dt
@@ -128,7 +120,6 @@ def update_seed(n_clicks, seed):
     return (
         plot_tree_graph(dt, feature_names, target_names),
         impurity_fig,
-        data_fig
     )
 
 @app.callback(
@@ -150,4 +141,4 @@ def update_details_plot(hoverData):
     return data_fig
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True, port=2221)
