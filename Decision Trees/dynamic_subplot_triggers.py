@@ -1,5 +1,6 @@
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, Input, Output, State
+import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
@@ -10,10 +11,12 @@ from sklearn.tree import DecisionTreeClassifier
 from utils import plot_dash_data, plot_impurity_vs_depth, seed_everything
 from simple_gini_visualization import truncate_tree_to_depth, visualize_tree
 from plot_tree import plot_tree_graph
-seed_everything(12)
-# seed_everything(191)
-# seed_everything(191)
-app = dash.Dash(__name__)
+# seed_everything(132)  # Balanced tree, explainable
+# seed_everything(12)    # Interesting yet confusing example where root and its child have same predictions
+# seed_everything(142)    # Unbalanced but simple to explain as cut is only along X1
+# seed_everything(191)    # Interesting yet confusing example where root and its child have same predictions
+# seed_everything(11)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # Configuration parameters
 BASE = 0.4  # Decay factor - each cluster has 40% of the previous cluster's size
 DEFAULT_N_CLUSTERS = 2
@@ -25,10 +28,11 @@ def calculate_proportions(n_clusters: int) -> np.ndarray:
     proportions = np.array(proportions) / np.sum(proportions)
     return proportions
 
-def main():
+def main(seed):
     """
     Main function to demonstrate Gini impurity visualization.
     """
+    seed_everything(seed)
     # Load dataset using data_generator
     from data_generator import generate_data, generate_blobs_data, generate_chessboard_data
     
@@ -67,17 +71,25 @@ def main():
     print('Plotting impurity vs depth')
     return fig, impurity_fig, dt, X_train, y_train, centers, feature_names, target_names
 
-data_fig, impurity_fig, dt, X_train, y_train, centers, feature_names, target_names = main()
+X_train, y_train, centers, dt = None, None, None, None
 app.layout = html.Div([
+    html.Div([
+        dcc.Input(
+            id='seed-input',
+            type='number',
+            placeholder='Enter random seed',
+            value=42,
+            style={'marginRight': '10px'}
+        ),
+        html.Button('Submit', id='submit-seed', n_clicks=0),
+    ]),
     html.Div([
         dcc.Graph(
             id='tree-plot',
-            figure=plot_tree_graph(dt, feature_names, target_names),
             style={'width': '30%', 'display': 'inline-block'}
         ),
         dcc.Graph(
             id='impurity-vs-depth-plot',
-            figure=impurity_fig,
             style={'width': '30%', 'display': 'inline-block'}
         ),
         dcc.Graph(
@@ -88,12 +100,36 @@ app.layout = html.Div([
     html.Div([
         dcc.Graph(
             id='data-decision-boundaries-full-plot',
-            figure=data_fig,
             style={'width': '32%', 'display': 'inline-block'}
         ),
     ])
 ])
 server = app.server
+@app.callback(
+    [
+        Output('tree-plot', 'figure'),
+        Output('impurity-vs-depth-plot', 'figure'),
+        Output('data-decision-boundaries-full-plot', 'figure')
+    ],
+    Input('submit-seed', 'n_clicks'),
+    State('seed-input', 'value')
+)
+def update_seed(n_clicks, seed):
+    if n_clicks == 0 or seed is None:
+        # On initial load, just return the original figures
+        return (
+            go.Figure(),
+            go.Figure(),
+            go.Figure(),
+        )
+    # Re-run main with new seed
+    global X_train, y_train, centers, dt
+    data_fig, impurity_fig, dt, X_train, y_train, centers, feature_names, target_names = main(seed)
+    return (
+        plot_tree_graph(dt, feature_names, target_names),
+        impurity_fig,
+        data_fig
+    )
 
 @app.callback(
     Output('data-decision-boundaries-plot', 'figure'),
@@ -103,11 +139,11 @@ def update_details_plot(hoverData):
     if hoverData is None:
         return go.Figure()
 
+    global X_train, y_train, centers, dt
     point = hoverData['points'][0]
     # x_val = point['x']
     hovered_depth = point['y']
     # print(point)
-    
     truncated_tree = truncate_tree_to_depth(dt, hovered_depth)
     data_fig = plot_dash_data(X_train, y_train, centers, truncated_tree, title_s='Decision regions for subtree')
     print(f'Plotting data with truncated decision tree with depth = {hovered_depth}')
