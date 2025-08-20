@@ -132,6 +132,8 @@ Traverse the tree according to the split conditions until a leaf is reached, the
 1. When user hovers on node $m$ with depth $d$, decision boundaries are visualized for depth=$d$ rather than node $m$(i.e., all nodes with depth=$d$ are considered leaf nodes)
 2. Sometimes it can so happen that decision boundary regions dont change with depth, this is possible as tree may predict the same label after the split
 3. Node impurity vs Tree depth figure has reversed x and y axis(to align tree depth and yaxis)
+4. Leaf nodes don't have split conditions.
+5. Maximum depth is the total number of levels in the tree. For the root node, Depth = $0$.
 
 ## Decision Tree Structure figure
 1. When you hover on any node $m$, it shows 2 sets of information is visible. 
@@ -154,9 +156,6 @@ Traverse the tree according to the split conditions until a leaf is reached, the
     2. Classification corresponding to that depth is visualized without considering **split conditions of nodes at that depth** (these conditions are used to grow the tree further).
     3. In other words, if one hovers on $\text{depth}=d$, then regions belonging to $Q_m^{left}$ and $Q_m^{right}$ (nodes having depth $d$) are not visualized, but all regions belonging to node $m$ having depth less than $d$ are.
 3. Node impurity is computed similar to the quality of split defined in the [Quality of split](#quality-of-split) section, except that all nodes, predictions, and their corresponding data are considered at that depth.
-4. Maximum depth is the total number of levels in the tree. For the root node, Depth = $0$.
-5. Leaf nodes don't have split conditions.
-6. Plot ticks are aligned with node depth in the Decision Tree structure figure.
 
 ## Instance 1
 
