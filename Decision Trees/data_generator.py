@@ -108,7 +108,7 @@ def generate_chessboard_data(n_samples: int = 500, n_rows: int = 2, n_cols: int 
 
 if __name__ == "__main__":
     from utils import seed_everything
-    from dynamic_subplot_triggers import calculate_proportions
+    from app import calculate_proportions
     seed_everything()
     BASE = 0.4  # Decay factor - each cluster has 40% of the previous cluster's size
     DEFAULT_N_CLUSTERS = 2
