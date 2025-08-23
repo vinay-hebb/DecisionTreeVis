@@ -149,4 +149,7 @@ def update_all(n_clicks, hoverData, seed):
     return tree_fig, impurity_fig, data_decision_fig
 
 if __name__ == '__main__':
-    app.run(debug=True, port=2221)
+    import os
+    port = int(os.environ.get('PORT', 7860))
+    debug = os.environ.get('DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug, host='0.0.0.0', port=port)
