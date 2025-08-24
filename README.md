@@ -1,3 +1,16 @@
+---
+title: Decision Tree Visualization
+emoji: 🎯
+colorFrom: pink
+colorTo: green
+sdk: docker
+sdk_version: "{{sdkVersion}}"
+app_file: app.py
+pinned: false
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
 # Decision Tree Classification with Interactive Visualization
 
 This project demonstrates decision tree classification using synthetically generated data with interactive visualizations and Gini impurity analysis.
