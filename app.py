@@ -75,6 +75,10 @@ def main(seed):
 X_train, y_train, centers, dt = None, None, None, None
 app.layout = html.Div([
     html.Div([
+        html.H2(
+            "Decision Tree Visualizer",
+            style={'marginBottom': '20px', 'textAlign': 'center'}
+        ),
         html.Label(
             'Random Seed (for reproducible data generation):',
             style={'marginRight': '10px', 'fontWeight': 'bold'}
