@@ -76,7 +76,7 @@ X_train, y_train, centers, dt = None, None, None, None
 app.layout = html.Div([
     html.Div([
         html.H2(
-            "Decision Tree Visualizer",
+            "Decision Tree Impurity Visualization",
             style={'marginBottom': '20px', 'textAlign': 'center'}
         ),
         html.Label(
